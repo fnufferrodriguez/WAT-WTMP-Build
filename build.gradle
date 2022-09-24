@@ -1,0 +1,80 @@
+def checkForNexusCredentials() {
+    if(!project.hasProperty('nexusUser')) {
+        println ('Please set the nexusUser property in the GRADLE_USER_HOME ($userHome/.gradle/gradle.properties) file or via -PnexusUser= .')
+    }
+    if(!project.hasProperty('nexusPassword')) {
+        println ('Please set the nexusPassword property in the GRADLE_USER_HOME ($userHome/.gradle/gradle.properties) file or via -PnexusPassword= .')
+    }
+}
+
+plugins {
+    id "application"
+}
+
+repositories {
+    maven {
+        url 'https://www.hec.usace.army.mil/nexus/repository/maven-public'
+    }
+    maven {
+        url 'https://www.hec.usace.army.mil/nexus/repository/hec-internal'
+        credentials {
+            checkForNexusCredentials()
+            username "$nexusUser"
+            password "$nexusPassword"
+        }
+    }
+}
+
+configurations {
+    wat_install
+    ressim_install
+    usbr_plugins
+    usbr_python
+    usbr_jasper
+}
+
+dependencies {
+    wat_install 'mil.army.usace.hec.wat:wat-install-package:1.1-DevNetAlpha-4@zip'
+    ressim_install 'mil.army.usace.hec.ressim:hec-ressim:4.0.0.QA-835-Not_For_Public_Release_zip@zip'
+}
+
+static boolean filterOriginalWatZip(FileVisitDetails fvd) {
+    // We don't use FIA, HMS, and swap WAT's ResSim 2.5 for ResSim 4.0.
+    def path = fvd.getRelativePath();
+    return path.contains("/apps/") || path.contains("S24FIAPlugin.jar") || path.contains("S20RASPlugin")  ||
+            path.contains("S9HMSPlugin") || path.contains("S15ResSimPlugin-v3.5")
+}
+
+task assembleInstaller(type: Sync) { task ->
+
+    task.into layout.buildDirectory.file("WTMP")
+
+    task.into("USBR-WTMP") { intoDir ->
+        configurations.wat_install.asFileTree.each { zipFile ->
+            intoDir.from(zipTree(zipFile)) { zipTree ->
+                zipTree.exclude { fvd -> return filterOriginalWatZip(fvd) }
+                zipTree.eachFile { fcd ->
+                    def segmentList = fcd.relativePath.segments.toList()
+                    // Duplicate HEC-WAT entry
+                    segmentList.remove(1)
+                    fcd.relativePath = new RelativePath(true, (String[])(segmentList.toArray()))
+                }
+                zipTree.includeEmptyDirs = false
+            }
+        }
+    }
+
+    task.into("USBR-WTMP/apps/HEC-ResSim") { intoDir ->
+        configurations.ressim_install.asFileTree.each { zipFile ->
+            intoDir.from(zipTree(zipFile)) { zipFileTree ->
+                zipFileTree.eachFile { fcd ->
+                    def segmentList = fcd.relativePath.segments.toList()
+                    // Duplicate HEC-ResSim entry
+                    segmentList.remove(3)
+                    fcd.relativePath = new RelativePath(true, (String[])(segmentList.toArray()))
+                }
+                zipFileTree.includeEmptyDirs = false
+            }
+        }
+    }
+}
