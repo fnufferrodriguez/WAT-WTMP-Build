@@ -7,6 +7,15 @@ def checkForNexusCredentials() {
     }
 }
 
+def checkForRMANexusCredentials() {
+    if(!project.hasProperty('rmaNexusUser')) {
+        println ('Please set the rmaNexusUser property in the GRADLE_USER_HOME ($userHome/.gradle/gradle.properties) file or via -PrmaNexusUser= .')
+    }
+    if(!project.hasProperty('rmaNexusPassword')) {
+        println ('Please set the rmaNexusPassword property in the GRADLE_USER_HOME ($userHome/.gradle/gradle.properties) file or via -PrmaNexusPassword= .')
+    }
+}
+
 plugins {
     id "application"
 }
@@ -23,32 +32,73 @@ repositories {
             password "$nexusPassword"
         }
     }
+    maven {
+        url 'https://artifact.rmanet.app/repository/usbr-component-snapshots/'
+        credentials {
+            checkForRMANexusCredentials()
+            username "$rmaNexusUser"
+            password "$rmaNexusPassword"
+        }
+    }
+    mavenCentral()
+    maven {
+        url 'https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/'
+    }
 }
 
 configurations {
+    // The base WAT install
     wat_install
+    // The extra upstream WAT plugins
+    wat_plugins
+    // The specific ResSim we want to use
     ressim_install
+    // CeQualW2 executables
+    cequalw2_exes {
+        transitive false
+    }
+    // The USBR WAT Plugins
     usbr_plugins
-    usbr_python
+    // Python Report Generating code
+    usbr_python_report
+    // Python Git Tool
+    usbr_python_git
+    // Jasper files
     usbr_jasper
 }
 
+ext.wat_version = '1.1-DevNetAlpha-4'
+
 dependencies {
-    wat_install 'mil.army.usace.hec.wat:wat-install-package:1.1-DevNetAlpha-4@zip'
+    wat_install "mil.army.usace.hec.wat:wat-install-package:${wat_version}@zip"
+
+    wat_plugins "mil.army.usace.hec.wat:wat-plugin-cequalw2:${wat_version}"
+
     ressim_install 'mil.army.usace.hec.ressim:hec-ressim:4.0.0.QA-835-Not_For_Public_Release_zip@zip'
+
+    usbr_plugins 'usbr.wat.plugins:usbr-actionpanel-plugin:0.0.2-SNAPSHOT'
+    usbr_plugins 'usbr.wat.plugins:usbr-comparison-report:0.0.2-SNAPSHOT'
+    usbr_plugins 'usbr.wat.plugins:usbr-simulation-report:0.0.2-SNAPSHOT'
+
+    usbr_python_report 'usbr.wat.plugins:usbr-actionpanel-python:0.0.1-SNAPSHOT@zip'
+
+    usbr_python_git 'usbr.wat.plugins:usbr-wtmp-git-tool:2.0.0-SNAPSHOT@zip'
+
+    configurations.usbr_plugins.exclude group: "mil.army.usace.hec.wat"
 }
 
 static boolean filterOriginalWatZip(FileVisitDetails fvd) {
     // We don't use FIA, HMS, and swap WAT's ResSim 2.5 for ResSim 4.0.
     def path = fvd.getRelativePath();
-    return path.contains("/apps/") || path.contains("S24FIAPlugin.jar") || path.contains("S20RASPlugin")  ||
-            path.contains("S9HMSPlugin") || path.contains("S15ResSimPlugin-v3.5")
+    return path.contains("/apps/") || path.contains("S25FIAPlugin.jar") ||
+            path.contains("S10HMSPlugin") || path.contains("S15ResSimPlugin-v3.5")
 }
 
 task assembleInstaller(type: Sync) { task ->
 
     task.into layout.buildDirectory.file("WTMP")
 
+    // The base WAT installer
     task.into("USBR-WTMP") { intoDir ->
         configurations.wat_install.asFileTree.each { zipFile ->
             intoDir.from(zipTree(zipFile)) { zipTree ->
@@ -64,6 +114,48 @@ task assembleInstaller(type: Sync) { task ->
         }
     }
 
+    // The plugin jars go in jar/ext
+    task.into("USBR-WTMP/HEC-WAT/jar/ext") { intoDir ->
+        from configurations.wat_plugins.setTransitive(false).copy()
+    }
+
+    // The plugin jars go in jar/ext
+    task.into("USBR-WTMP/HEC-WAT/jar/ext") { intoDir ->
+        from configurations.usbr_plugins.setTransitive(false).copy()
+    }
+
+    // Plugin dependencies go into jar/sys
+    task.into("USBR-WTMP/HEC-WAT/jar/sys") { intoDir ->
+        from configurations.usbr_plugins.setTransitive(true).copyRecursive() - configurations.usbr_plugins.setTransitive(false).copy()
+    }
+
+    task.into("USBR-WTMP/HEC-WAT/AutomatedReport") { intoDir ->
+        configurations.usbr_python_report.asFileTree.each { zipFile ->
+            intoDir.from(zipTree(zipFile)) { zipFileTree ->
+                zipFileTree.eachFile { fcd ->
+                    def segmentList = fcd.relativePath.segments.toList()
+                    segmentList.remove(3)
+                    fcd.relativePath = new RelativePath(true, (String[])segmentList.toArray())
+                }
+                zipFileTree.includeEmptyDirs = false
+            }
+        }
+    }
+
+    task.into("USBR-WTMP/tools") { intoDir ->
+        configurations.usbr_python_git.asFileTree.each { zipFile ->
+            intoDir.from(zipTree(zipFile)) { zipFileTree ->
+                zipFileTree.eachFile { fcd ->
+                    def segmentList = fcd.relativePath.segments.toList()
+                    segmentList.remove(2)
+                    fcd.relativePath = new RelativePath(true, (String[])segmentList.toArray())
+                }
+                zipFileTree.includeEmptyDirs = false
+            }
+        }
+    }
+
+    // The right version of ResSim
     task.into("USBR-WTMP/apps/HEC-ResSim") { intoDir ->
         configurations.ressim_install.asFileTree.each { zipFile ->
             intoDir.from(zipTree(zipFile)) { zipFileTree ->
@@ -77,4 +169,21 @@ task assembleInstaller(type: Sync) { task ->
             }
         }
     }
+
+    task.into("USBR-WTMP/apps/ceQualW2") { intoDir ->
+        configurations.ressim_install.asFileTree.each { zipFile ->
+            intoDir.from(zipTree(zipFile)) { zipFileTree ->
+                zipFileTree.eachFile { fcd ->
+                    def segmentList = fcd.relativePath.segments.toList()
+                    // Duplicate HEC-ResSim entry
+                    segmentList.remove(3)
+                    fcd.relativePath = new RelativePath(true, (String[])(segmentList.toArray()))
+                }
+                zipFileTree.includeEmptyDirs = false
+            }
+        }
+    }
+
+    // There will be duplicates between WAT and the plugins. Just ignore them for now.
+    task.duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 }
