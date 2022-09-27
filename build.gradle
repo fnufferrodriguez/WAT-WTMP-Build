@@ -40,6 +40,14 @@ repositories {
             password "$rmaNexusPassword"
         }
     }
+    maven {
+        url 'https://artifact.rmanet.app/repository/cequal-releases/'
+        credentials {
+            checkForRMANexusCredentials()
+            username "$rmaNexusUser"
+            password "$rmaNexusPassword"
+        }
+    }
     mavenCentral()
     maven {
         url 'https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/'
@@ -53,10 +61,14 @@ configurations {
     wat_plugins
     // The specific ResSim we want to use
     ressim_install
-    // CeQualW2 executables
-    cequalw2_exes {
-        transitive false
-    }
+    // W2 Pre EXE, fixed name
+    w2_pre_exe
+    // W2 Post EXE, fixed name
+    w2_post_exe
+    // CeQualW2 executable
+    cequalw2_exe
+    // The TCD Variant required sometimes
+    cequalw2_TCD_exe
     // The USBR WAT Plugins
     usbr_plugins
     // Python Report Generating code
@@ -73,6 +85,11 @@ dependencies {
     wat_install "mil.army.usace.hec.wat:wat-install-package:${wat_version}@zip"
 
     wat_plugins "mil.army.usace.hec.wat:wat-plugin-cequalw2:${wat_version}"
+
+    w2_pre_exe 'edu.pdx.ce.w2:w2-pre:4.0-win-x86_64@exe'
+    w2_post_exe 'edu.pdx.ce.w2:w2-post:3.0-win-x86_64@exe'
+    cequalw2_exe 'edu.pdx.ce.w2:w2:4.0-win-x86_64@exe'
+    cequalw2_TCD_exe 'edu.pdx.ce.w2:w2:4.1-TCD-d7-win-x86_64@exe'
 
     ressim_install 'mil.army.usace.hec.ressim:hec-ressim:4.0.0.QA-839-Not_For_Public_Release@zip'
 
@@ -170,17 +187,17 @@ task assembleInstaller(type: Sync) { task ->
         }
     }
 
-    task.into("USBR-WTMP/apps/ceQualW2") { intoDir ->
-        configurations.ressim_install.asFileTree.each { zipFile ->
-            intoDir.from(zipTree(zipFile)) { zipFileTree ->
-                zipFileTree.eachFile { fcd ->
-                    def segmentList = fcd.relativePath.segments.toList()
-                    // Duplicate HEC-ResSim entry
-                    segmentList.remove(3)
-                    fcd.relativePath = new RelativePath(true, (String[])(segmentList.toArray()))
-                }
-                zipFileTree.includeEmptyDirs = false
-            }
+    task.into("USBR-WTMP/apps/ceQualW2/exe") { intoDir ->
+        // These will take whatever name is grabbed out of Nexus
+        intoDir.from configurations.cequalw2_exe
+        intoDir.from configurations.cequalw2_TCD_exe
+        intoDir.from(configurations.w2_pre_exe) { fromFile ->
+            // Explicitly named as the WAT Plugin looks for this.
+            fromFile.rename { "Console_PreW2.exe" }
+        }
+        intoDir.from(configurations.w2_post_exe) { fromFile ->
+            // Explicitly named as the WAT Plugin looks for this.
+            fromFile.rename { "W2_Post3.exe" }
         }
     }
 
