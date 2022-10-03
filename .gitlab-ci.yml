@@ -1,0 +1,29 @@
+image: eclipse-temurin:8
+
+stages:
+  - build
+  - deploy
+
+build-install-package:
+  stage: build
+  script:
+    - ./gradlew wtmpInstaller -PnexusUser="$NEXUS_USER" -PnexusPassword="$NEXUS_PASSWORD" -PrmaNexusUser="$RMA_NEXUS_USER" -PrmaNexusPassword="$RMA_NEXUS_PASSWORD"
+  artifacts:
+    paths:
+      - build/**
+      - .gradle/*
+  tags:
+    - docker
+
+deploy-to-nexus:
+  stage: deploy
+  script:
+    - ./gradlew publish -PnexusUser="$NEXUS_USER" -PnexusPassword="$NEXUS_PASSWORD" -PrmaNexusUser="$RMA_NEXUS_USER" -PrmaNexusPassword="$RMA_NEXUS_PASSWORD"
+  dependencies:
+    - build-install-package
+  tags:
+    - docker
+  when: manual
+  only:
+    refs:
+      - tags

@@ -315,3 +315,25 @@ configure(showGit) {
     group = 'help'
     description = 'Shows Git Tag Versioning information'
 }
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifactId = "usbr-wtmp-package"
+            artifact source: rtsInstaller, extension: 'zip'
+        }
+    }
+    repositories {
+        maven {
+            credentials {
+                username = project.hasProperty('rmaNexusUser') ? "$nexusUser" : "defaultUser"
+                password = project.hasProperty('rmaNexusPassword') ? "$nexusPassword" : "defaultPassword"
+            }
+            afterEvaluate {
+                url = version.toString().endsWith("SNAPSHOT") ?
+                        "https://does-not-publish-snapshots.invalid/url" :
+                        "https://artifact.rmanet.app/repository/usbr-releases/"
+            }
+        }
+    }
+}
