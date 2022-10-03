@@ -18,6 +18,49 @@ def checkForRMANexusCredentials() {
 
 plugins {
     id "application"
+    id "com.palantir.git-version" version "0.13.0"
+    id "org.ajoberstar.grgit" version "1.7.2"
+}
+
+def versionLabel(gitInfo) {
+    def branch = gitInfo.branchName // all branches are snapshots, only tags get released
+    def tag = gitInfo.lastTag
+    // tag is returned as is. Branch may need cleanup
+    return branch == null ? tag : branch.replace("/","-") + "-SNAPSHOT"
+}
+
+group = 'gov.usbr.usbr-wtmp-package'
+version = versionLabel(versionDetails())
+
+/**
+ * When running on the Build System (eg TeamCity) will get BUILD_NUMBER
+ * Otherwise, gets the current commit (and status)
+ */
+String getBuildID() {
+    if(project.version.contains("-SNAPSHOT")) {
+        def buildNum = System.env.BUILD_NUMBER
+        if (!buildNum?.trim()) {
+            buildNum = "-${grgit.head().abbreviatedId}"
+            def clean = grgit.status().isClean()
+            if (!clean) {
+                buildNum += "+"
+            }
+        } else {
+            buildNum = "." + buildNum
+        }
+        return buildNum
+    } else {
+        // If dirty, return "+"
+        return grgit.status().isClean() ? "" : "+"
+    }
+}
+
+String getShortVersionName() {
+    String shortVersion = project.version
+    if(shortVersion.contains("-SNAPSHOT")) {
+        shortVersion = shortVersion.substring(0, shortVersion.indexOf("-SNAPSHOT"))
+    }
+    return shortVersion
 }
 
 repositories {
@@ -33,15 +76,7 @@ repositories {
         }
     }
     maven {
-        url 'https://artifact.rmanet.app/repository/usbr-component-snapshots/'
-        credentials {
-            checkForRMANexusCredentials()
-            username "$rmaNexusUser"
-            password "$rmaNexusPassword"
-        }
-    }
-    maven {
-        url 'https://artifact.rmanet.app/repository/cequal-releases/'
+        url 'https://artifact.rmanet.app/repository/rma-internal'
         credentials {
             checkForRMANexusCredentials()
             username "$rmaNexusUser"
@@ -82,7 +117,7 @@ configurations {
 // WAT and upstream WAT Plugin Version
 ext.wat_version = '1.1-DevNetAlpha-6'
 // USBR Plugins and Python Version
-ext.usbr_version = "0.0.2-SNAPSHOT"
+ext.usbr_version = "0.0.2"
 // USBR Git Tool Version
 ext.usbr_git_version = "2.0.0-SNAPSHOT"
 // ResSim Version
@@ -105,6 +140,8 @@ dependencies {
     usbr_plugins "usbr.wat.plugins:usbr-comparison-report:${usbr_version}"
     usbr_plugins "usbr.wat.plugins:usbr-simulation-report:${usbr_version}"
 
+    usbr_jasper "usbr.wat.plugins:usbr-actionpanel-jasper:${usbr_version}@zip"
+
     usbr_python_report 'usbr.wat.plugins:usbr-actionpanel-python:0.0.1-SNAPSHOT@zip'
 
     usbr_python_git "usbr.wat.plugins:usbr-wtmp-git-tool:${usbr_git_version}@zip"
@@ -121,10 +158,10 @@ static boolean filterOriginalWatZip(FileVisitDetails fvd) {
 
 task assembleInstaller(type: Sync) { task ->
 
-    task.into layout.buildDirectory.file("WTMP")
+    task.into project.buildDir
 
     // The base WAT installer
-    task.into("USBR-WTMP") { intoDir ->
+    task.into("WTMP") { intoDir ->
         configurations.wat_install.asFileTree.each { zipFile ->
             intoDir.from(zipTree(zipFile)) { zipTree ->
                 zipTree.exclude { fvd -> return filterOriginalWatZip(fvd) }
@@ -140,21 +177,21 @@ task assembleInstaller(type: Sync) { task ->
     }
 
     // The plugin jars go in jar/ext
-    task.into("USBR-WTMP/HEC-WAT/jar/ext") { intoDir ->
+    task.into("WTMP/HEC-WAT/jar/ext") { intoDir ->
         from configurations.wat_plugins.setTransitive(false).copy()
     }
 
     // The plugin jars go in jar/ext
-    task.into("USBR-WTMP/HEC-WAT/jar/ext") { intoDir ->
+    task.into("WTMP/HEC-WAT/jar/ext") { intoDir ->
         from configurations.usbr_plugins.setTransitive(false).copy()
     }
 
     // Plugin dependencies go into jar/sys
-    task.into("USBR-WTMP/HEC-WAT/jar/sys") { intoDir ->
+    task.into("WTMP/HEC-WAT/jar/sys") { intoDir ->
         from configurations.usbr_plugins.setTransitive(true).copyRecursive() - configurations.usbr_plugins.setTransitive(false).copy()
     }
 
-    task.into("USBR-WTMP/HEC-WAT/AutomatedReport") { intoDir ->
+    task.into("WTMP/HEC-WAT/AutomatedReport") { intoDir ->
         configurations.usbr_python_report.asFileTree.each { zipFile ->
             intoDir.from(zipTree(zipFile)) { zipFileTree ->
                 zipFileTree.eachFile { fcd ->
@@ -167,7 +204,20 @@ task assembleInstaller(type: Sync) { task ->
         }
     }
 
-    task.into("USBR-WTMP/tools") { intoDir ->
+    task.into("WTMP/HEC-WAT/report") { intoDir ->
+        configurations.usbr_jasper.asFileTree.each { zipFile ->
+            intoDir.from(zipTree(zipFile)) { zipFileTree ->
+                zipFileTree.eachFile { fcd ->
+                    def segmentList = fcd.relativePath.segments.toList()
+                    segmentList.remove(3)
+                    fcd.relativePath = new RelativePath(true, (String[])segmentList.toArray())
+                }
+                zipFileTree.includeEmptyDirs = false
+            }
+        }
+    }
+
+    task.into("WTMP/tools") { intoDir ->
         configurations.usbr_python_git.asFileTree.each { zipFile ->
             intoDir.from(zipTree(zipFile)) { zipFileTree ->
                 zipFileTree.eachFile { fcd ->
@@ -181,7 +231,7 @@ task assembleInstaller(type: Sync) { task ->
     }
 
     // The right version of ResSim
-    task.into("USBR-WTMP/apps/HEC-ResSim") { intoDir ->
+    task.into("WTMP/apps/HEC-ResSim") { intoDir ->
         configurations.ressim_install.asFileTree.each { zipFile ->
             intoDir.from(zipTree(zipFile)) { zipFileTree ->
                 zipFileTree.eachFile { fcd ->
@@ -195,7 +245,7 @@ task assembleInstaller(type: Sync) { task ->
         }
     }
 
-    task.into("USBR-WTMP/apps/ceQualW2/exe") { intoDir ->
+    task.into("WTMP/apps/ceQualW2/exe") { intoDir ->
         // These will take whatever name is grabbed out of Nexus
         intoDir.from configurations.cequalw2_exe
         intoDir.from configurations.cequalw2_TCD_exe
@@ -211,4 +261,57 @@ task assembleInstaller(type: Sync) { task ->
 
     // There will be duplicates between WAT and the plugins. Just ignore them for now.
     task.duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+}
+
+task wtmpInstaller(type: Zip){
+    dependsOn assembleInstaller
+
+    from 'build/WTMP'
+
+    def baseName = 'WTMP'
+    def version = getShortVersionName() + getBuildID()
+
+    destinationDirectory = file("$buildDir")
+    archiveBaseName = baseName
+    archiveVersion = version
+    archiveExtension = 'zip'
+
+    def buildSpecificSubdir = baseName + '-' + version
+
+    includeEmptyDirs false
+
+    // In the archive, put it in a subfolder with the build name
+    eachFile { fileCopyDetails ->
+        fileCopyDetails.setRelativePath(fileCopyDetails.getRelativePath().prepend(buildSpecificSubdir))
+    }
+}
+
+/**
+ * To help people understand how the versioning
+ * interacts with the git repo
+ */
+task showGit () {
+    doFirst {
+        def gitInfo = versionDetails()
+        println( "Used:    " + getVersion() ) // The select version (the project.version field)
+        println( "Tag:     " + gitInfo.lastTag) // actual tag or commit hash(short) if no tag
+        println( "Hash:    " + gitInfo.gitHash) // short commit hash
+        println( "Branch:  " + gitInfo.branchName) // branch name (null if tag checkout)
+        println( "TagBuild:" + gitInfo.isCleanTag) // true if repoi is in dettached head mode(e.g. git checkout <tag>)
+    }
+}
+
+configure(assembleInstaller) {
+    group = 'application'
+    description = 'Assembles the WTMP Install for local testing.'
+}
+
+configure(wtmpInstaller) {
+    group = 'application'
+    description = 'Build the WTMP Installer Package'
+}
+
+configure(showGit) {
+    group = 'help'
+    description = 'Shows Git Tag Versioning information'
 }
