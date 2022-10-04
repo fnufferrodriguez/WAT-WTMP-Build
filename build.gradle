@@ -30,7 +30,7 @@ def versionLabel(gitInfo) {
     return branch == null ? tag : branch.replace("/","-") + "-SNAPSHOT"
 }
 
-group = 'gov.usbr.usbr-wtmp-package'
+group = 'gov.usbr'
 version = versionLabel(versionDetails())
 
 /**
@@ -173,6 +173,25 @@ task assembleInstaller(type: Sync) { task ->
                     fcd.relativePath = new RelativePath(true, (String[])(segmentList.toArray()))
                 }
                 zipTree.includeEmptyDirs = false
+                zipTree.include '**/*.config'
+                zipTree.filter{ line -> line.replaceAll('-Xmx6g', '-Xmx10g')}
+            }
+        }
+    }
+
+    // The base WAT installer
+    task.into("WTMP") { intoDir ->
+        configurations.wat_install.asFileTree.each { zipFile ->
+            intoDir.from(zipTree(zipFile)) { zipTree ->
+                zipTree.exclude { fvd -> return filterOriginalWatZip(fvd) }
+                zipTree.eachFile { fcd ->
+                    def segmentList = fcd.relativePath.segments.toList()
+                    // Duplicate HEC-WAT entry
+                    segmentList.remove(1)
+                    fcd.relativePath = new RelativePath(true, (String[])(segmentList.toArray()))
+                }
+                zipTree.includeEmptyDirs = false
+                zipTree.exclude '**/*.config'
             }
         }
     }
@@ -270,14 +289,15 @@ task wtmpInstaller(type: Zip){
     from 'build/WTMP'
 
     def baseName = 'WTMP'
-    def version = getShortVersionName() + getBuildID()
+    def version_no_platform = getShortVersionName() + getBuildID()
+    def version = version_no_platform + "-win-x86_64"
 
     destinationDirectory = file("$buildDir")
     archiveBaseName = baseName
     archiveVersion = version
     archiveExtension = 'zip'
 
-    def buildSpecificSubdir = baseName + '-' + version
+    def buildSpecificSubdir = baseName + '-' + version_no_platform
 
     includeEmptyDirs false
 
