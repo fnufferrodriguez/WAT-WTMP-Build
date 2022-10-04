@@ -327,8 +327,8 @@ publishing {
     repositories {
         maven {
             credentials {
-                username = project.hasProperty('rmaNexusUser') ? "$nexusUser" : "defaultUser"
-                password = project.hasProperty('rmaNexusPassword') ? "$nexusPassword" : "defaultPassword"
+                username = project.hasProperty('rmaNexusUser') ? "$rmaNexusUser" : "defaultUser"
+                password = project.hasProperty('rmaNexusPassword') ? "$rmaNexusPassword" : "defaultPassword"
             }
             afterEvaluate {
                 url = version.toString().endsWith("SNAPSHOT") ?
