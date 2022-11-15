@@ -30,8 +30,7 @@ replay_pid*
 /.gradle/
 
 # Build files
-*/build/*
-RTS-Plugins/*/build/*
+build/*
 
 # Eclipse files
 .project
