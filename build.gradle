@@ -120,13 +120,15 @@ configurations {
 }
 
 // WAT and upstream WAT Plugin Version
-ext.wat_version = '1.1-DevNetAlpha-16'
+ext.wat_version = '1.1-DevNetAlpha-17'
 // USBR Plugins and Python Version
 ext.usbr_version = "0.0.18"
 // USBR Git Tool Version
 ext.usbr_git_version = "3.3.4"
 // ResSim Version
 ext.ressim_version = "4.0.0.QA-844-Not_For_Public_Release"
+// ResSim Plugin Version
+ext.ressim_plugin_version = "1.1-DevNetAlpha-16"
 // USBR Fonts Version
 ext.jasper_fonts_version = "1.0"
 // CeQualW2 Plugin Version
@@ -136,7 +138,7 @@ dependencies {
     wat_install "mil.army.usace.hec.wat:wat-install-package:${wat_version}-win-x86_64@zip"
 
     wat_plugins "mil.army.usace.hec.wat:wat-plugin-cequalw2:${cequalw2_plugin_version}"
-    wat_plugins "mil.army.usace.hec.wat:wat-plugin-ressim-4.0:${wat_version}"
+    wat_plugins "mil.army.usace.hec.wat:wat-plugin-ressim-4.0:${ressim_plugin_version}"
 
     w2_pre_exe 'edu.pdx.ce.w2:w2-pre:4.0-win-x86_64@exe'
     w2_post_exe 'edu.pdx.ce.w2:w2-post:3.0-win-x86_64@exe'
@@ -175,7 +177,10 @@ static boolean filterOriginalWatZip(FileVisitDetails fvd) {
     // We don't use FIA, HMS, and swap WAT's ResSim 2.5 for ResSim 4.0.
     def path = fvd.getRelativePath();
     return path.contains("/apps/") || path.contains("S25FIAPlugin.jar") ||
-            path.contains("S10HMSPlugin") || path.contains("S15ResSimPlugin-v3.5")
+            path.contains("S10HMSPlugin") || path.contains("S15ResSimPlugin-v3.5") ||
+            path.contains("S20RASPlugin") || path.contains("fcPlugin-1.1-") ||
+            path.contains("hsPlugin-1.1-") || path.contains("sdi-1.1-") ||
+            path.contains("pm-1.1-")
 }
 
 task assembleInstaller(type: Sync) { task ->
