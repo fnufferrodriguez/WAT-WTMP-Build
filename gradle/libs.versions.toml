@@ -1,0 +1,48 @@
+[versions]
+wat = { strictly = "1.1-DevNetAlpha-20" }
+
+# wat plugins
+usbr-plugin = { strictly = "0.0.23" }
+cequal-plugin = { strictly = "2.0.6" }
+ressim-plugin = { strictly = "2.0.0" }
+
+# usbr git tool
+usbr-git = {strictly = "3.3.4"}
+
+# ResSim
+ressim-zip = { strictly = "4.0.0.QA-941-Not_For_Public_Release" }
+
+# jasper fonts jar
+jasper-fonts = { strictly = "1.0" }
+
+# W2 natives
+w2pre = { strictly = "4.0-win-x86_64" }
+w2post = { strictly = "3.0-win-x86_64" }
+cequalw2-exe = { strictly = "4.0-win-x86_64" }
+cequalw2-tcd-exe = { strictly = "4.1-TCD-mp-win-x86_64" }
+
+cequalw2-v45-exe = { strictly = "4.5-win-x86_64" }
+cequalw2preconsole-v45-exe = { strictly = "4.5-win-x86_64" }
+cequalw2pre-v45-exe = { strictly = "4.5-win-x86_64" }
+
+jackson-version = { strictly = "2.13.0"}
+
+
+[libraries]
+# usbr plugins
+actionpanel-plugin = { module = "usbr.wat.plugins:usbr-actionpanel-plugin", version.ref = "usbr-plugin" }
+comparison-report-plugin = { module = "usbr.wat.plugins:usbr-comparison-report", version.ref = "usbr-plugin" }
+simulation-report-plugin = { module = "usbr.wat.plugins:usbr-simulation-report", version.ref = "usbr-plugin" }
+
+# wat plugins
+cequal-plugin = { module = "mil.army.usace.hec.wat:wat-plugin-cequalw2", version.ref = "cequal-plugin" }
+ressim-plugin = { module = "mil.army.usace.hec.wat:wat-plugin-ressim-4.0", version.ref = "ressim-plugin" }
+
+jasper-fonts = { module = "gov.usbr:usbr-jasper-fonts", version.ref = "jasper-fonts"}
+
+jackson-json = {module = "com.fasterxml.jackson.datatype:jackson-datatype-json-org", version.ref = "jackson.version"}
+
+
+[bundles]
+wat-plugins = ["cequal-plugin", "ressim-plugin"]
+usbr-plugins = ["actionpanel-plugin", "comparison-report-plugin", "simulation-report-plugin"]
