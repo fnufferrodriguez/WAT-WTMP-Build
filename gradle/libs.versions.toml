@@ -7,7 +7,7 @@ cequal-plugin = { strictly = "2.0.6" }
 ressim-plugin = { strictly = "2.0.0" }
 
 # usbr git tool
-usbr-git = {strictly = "3.3.5"}
+usbr-git = { strictly = "3.3.5" }
 
 # ResSim
 ressim-zip = { strictly = "4.0.0.QA-962-Not_For_Public_Release" }
@@ -25,7 +25,11 @@ cequalw2-v45-exe = { strictly = "4.5-win-x86_64" }
 cequalw2preconsole-v45-exe = { strictly = "4.5-win-x86_64" }
 cequalw2pre-v45-exe = { strictly = "4.5-win-x86_64" }
 
-jackson-version = { strictly = "2.13.0"}
+jackson-version = { strictly = "2.13.0" }
+
+# JHDF5 needed for some scripts
+jhdf5 = { strictly = "1.0-win-x86_64" }
+jarhdf5 = { strictly = "2.11.0" }
 
 
 [libraries]
@@ -38,10 +42,13 @@ simulation-report-plugin = { module = "usbr.wat.plugins:usbr-simulation-report",
 cequal-plugin = { module = "mil.army.usace.hec.wat:wat-plugin-cequalw2", version.ref = "cequal-plugin" }
 ressim-plugin = { module = "mil.army.usace.hec.wat:wat-plugin-ressim-4.0", version.ref = "ressim-plugin" }
 
-jasper-fonts = { module = "gov.usbr:usbr-jasper-fonts", version.ref = "jasper-fonts"}
+jasper-fonts = { module = "gov.usbr:usbr-jasper-fonts", version.ref = "jasper-fonts" }
 
-jackson-json = {module = "com.fasterxml.jackson.datatype:jackson-datatype-json-org", version.ref = "jackson.version"}
+jackson-json = { module = "com.fasterxml.jackson.datatype:jackson-datatype-json-org", version.ref = "jackson.version" }
 
+# JHDF Needed for some scripts
+jhdf5-win-x8664 = { module = "mil.army.usace.hec.ressim:jhdf5-native", version.ref = "jhdf5" }
+jarhdf5 = { module = "ncsa.hdf:jarhdf5", version.ref = "jarhdf5" }
 
 [bundles]
 wat-plugins = ["cequal-plugin", "ressim-plugin"]
