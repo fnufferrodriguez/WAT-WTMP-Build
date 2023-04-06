@@ -117,6 +117,8 @@ configurations {
     usbr_python_git
     // Jasper files
     usbr_jasper
+    // Additional WAT Natives
+    addl_wat_natives
 }
 
 // Version definitions relocated to gradle/libs.versions.toml
@@ -144,6 +146,9 @@ dependencies {
 
     // Filtering out Jackson jars from WAT drops this jar, which USBR Plugins do not pull in. Add it back
     addl_wat_jars libs.jackson.json
+    addl_wat_jars libs.jarhdf5
+
+    addl_wat_natives libs.jhdf5.win.x8664
 
     usbr_python_report "usbr.wat.plugins:usbr-actionpanel-python:${libs.versions.usbr.plugin.get()}!!@zip"
 
@@ -224,8 +229,15 @@ task assembleInstaller(type: Sync) { task ->
     }
 
     // Additional jars into WAT/jar (eg Jasper fonts)
-    task.into("WTMP/HEC-WAT/jar") { intoDir ->
+    task.into("WTMP/HEC-WAT/jar/sys") { intoDir ->
         from configurations.addl_wat_jars.setTransitive(false).copy()
+    }
+
+    // Additional natives into WAT/lib (eg Jasper fonts)
+    task.into("WTMP/HEC-WAT/lib") { intoDir ->
+        configurations.addl_wat_natives.asFileTree.each { zipFile ->
+            intoDir.from(zipTree(zipFile))
+        }
     }
 
     // The plugin jars go in jar/ext
