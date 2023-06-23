@@ -19,8 +19,8 @@ def checkForRMANexusCredentials() {
 plugins {
     id "application"
     id "maven-publish"
-    id "com.palantir.git-version" version "0.13.0"
-    id "org.ajoberstar.grgit" version "1.7.2"
+    id "com.palantir.git-version" version "3.0.0"
+    id "org.ajoberstar.grgit" version "4.1.1"
 }
 
 def versionLabel(gitInfo) {
