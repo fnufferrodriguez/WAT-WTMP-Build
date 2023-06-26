@@ -188,6 +188,10 @@ static boolean filterOriginalWatZip(FileVisitDetails fvd) {
             path.contains("gvdl-util")
 }
 
+def getGVDLUtilJarName() {
+    libs.ressim.gvdl.get().module.name + "-" + libs.versions.ressim.gvdl.get() + ".jar"
+}
+
 task assembleInstaller(type: Sync) { task ->
 
     task.into project.buildDir
@@ -205,6 +209,7 @@ task assembleInstaller(type: Sync) { task ->
                 }
                 zipTree.includeEmptyDirs = false
                 zipTree.include '**/*.config'
+                zipTree.include '**/*.template'
                 zipTree.filter{ line -> {
                     var updatedLine = line.replaceAll('-Xmx6g', '-Xmx10g')
                     if(updatedLine.contains("-Dapp.Version")) {
@@ -215,6 +220,9 @@ task assembleInstaller(type: Sync) { task ->
                                "# +--------------------------+\n" +
                                "vmparam -Djavax.net.ssl.trustStoreType=WINDOWS-ROOT\n" + 
                                "vmparam -Dw2.iterative.compute=true")
+                    }
+                    if(updatedLine.contains("gvdl-util")) {
+                        updatedLine = "addjar jar/" + getGVDLUtilJarName()
                     }
                     return updatedLine
                 }}
@@ -235,6 +243,7 @@ task assembleInstaller(type: Sync) { task ->
                 }
                 zipTree.includeEmptyDirs = false
                 zipTree.exclude '**/*.config'
+                zipTree.exclude '**/*.template'
             }
         }
     }
