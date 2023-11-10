@@ -220,7 +220,8 @@ task assembleInstaller(type: Sync) { task ->
                                "# +--------------------------+\n" +
                                "vmparam -Djavax.net.ssl.trustStoreType=WINDOWS-ROOT\n" + 
                                "vmparam -Dw2.iterative.compute=true\n" +
-                               "vmparam -Dlogback.configurationFile=./config/properties/logback.xml")
+                               "vmparam -Dlogback.configurationFile=./config/properties/logback.xml\n" +
+                               "vmparam -DEnableSkipModelsMenu=true")
                     }
                     if(updatedLine.contains("gvdl-util")) {
                         updatedLine = "addjar jar/" + getGVDLUtilJarName()
