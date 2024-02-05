@@ -105,8 +105,12 @@ configurations {
     cequalw2_exe
     // The TCD Variant required sometimes
     cequalw2_TCD_exe
+    // Another TCD variant required sometimes
+    cequalw2_TCD_0817_exe
     // CeQualW2 4.5 executable set
     cequalw2_45_exes
+    // Folsom Exe required by some users
+    cequalw2_folsom_exe
     // Extra Jars
     addl_wat_jars
     // Extra Jars
@@ -134,10 +138,13 @@ dependencies {
     w2_post_exe "edu.pdx.ce.w2:w2-post:${libs.versions.w2post.get()}!!@exe"
     cequalw2_exe "edu.pdx.ce.w2:w2:${libs.versions.cequalw2.exe.get()}!!@exe"
     cequalw2_TCD_exe "edu.pdx.ce.w2:w2:${libs.versions.cequalw2.tcd.exe.get()}!!@exe"
+    cequalw2_TCD_0817_exe "edu.pdx.ce.w2:w2:${libs.versions.cequalw2.tcd081721.exe.get()}!!@exe"
 
     cequalw2_45_exes "edu.pdx.ce.w2:w2:${libs.versions.cequalw2.v45.exe.get()}!!@exe"
     cequalw2_45_exes "edu.pdx.ce.w2:w2-pre-console:${libs.versions.cequalw2preconsole.v45.exe.get()}!!@exe"
     cequalw2_45_exes "edu.pdx.ce.w2:w2-pre:${libs.versions.cequalw2pre.v45.exe.get()}!!@exe"
+
+    cequalw2_folsom_exe "edu.pdx.ce.w2:w2:${libs.versions.cequalw2.folsom.exe.get()}!!@exe"
 
     ressim_install "mil.army.usace.hec.ressim:hec-ressim:${libs.versions.ressim.zip.get()}!!@zip"
 
@@ -370,11 +377,19 @@ task assembleInstaller(type: Sync) { task ->
             // Explicitly named as the WAT Plugin looks for this.
             fromFile.rename { "W2_Post3.exe" }
         }
+        intoDir.from(configurations.cequalw2_TCD_0817_exe) { fromFile ->
+            // Explicitly named as the WAT Plugin looks for this.
+            fromFile.rename { "W2_TCD_081721.exe" }
+        }
     }
 
     task.into("WTMP/apps/ceQualW2/exec_45") { intoDir ->
         // These will take whatever name is grabbed out of Nexus
         intoDir.from configurations.cequalw2_45_exes
+        intoDir.from(configurations.cequalw2_folsom_exe) { fromFile ->
+            // Explicitly named as the WAT Plugin looks for this.
+            fromFile.rename { "w2_v45_64_Folsom.exe" }
+        }
     }
 
     // There will be duplicates between WAT and the plugins. Just ignore them for now.
