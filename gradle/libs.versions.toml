@@ -7,7 +7,7 @@ cequal-plugin = { strictly = "2.4.1" }
 ressim-plugin = { strictly = "2.2.1" }
 
 # ressim gvdl plugin jar
-ressim-gvdl = { strictly = "4.0.1.47-Beta" }
+ressim-gvdl = { strictly = "4.0.1.106-Beta" }
 
 # usbr git tool
 usbr-git = { strictly = "3.3.6" }
