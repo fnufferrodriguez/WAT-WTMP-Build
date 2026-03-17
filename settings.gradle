@@ -36,9 +36,8 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
 
     repositories {
-        mavenCentral()
 
-        // Route only gov.usbr.wq artifacts to GitHub Packages
+        // Route only specific artifacts to GitHub Packages
         exclusiveContent {
             forRepository {
                 maven {
@@ -50,7 +49,7 @@ dependencyResolutionManagement {
                     }
                 }
             }
-            filter { includeGroup('gov.usbr.wq') }
+            filter { includeModule('usbr.wat.plugins', 'usbr-actionpanel-plugin') }
         }
 
         exclusiveContent {
@@ -64,7 +63,7 @@ dependencyResolutionManagement {
                     }
                 }
             }
-            filter { includeGroup('gov.usbr.wq') }
+            filter { includeModule('usbr.wat.plugins', 'usbr-comparison-report') }
         }
 
         exclusiveContent {
@@ -78,7 +77,7 @@ dependencyResolutionManagement {
                     }
                 }
             }
-            filter { includeGroup('gov.usbr.wq') }
+            filter { includeModule('usbr.wat.plugins', 'usbr-forecast-report') }
         }
 
         exclusiveContent {
@@ -92,7 +91,7 @@ dependencyResolutionManagement {
                     }
                 }
             }
-            filter { includeGroup('gov.usbr.wq') }
+            filter { includeModule('usbr.wat.plugins', 'usbr-simulation-report') }
         }
 
         exclusiveContent {
@@ -106,7 +105,7 @@ dependencyResolutionManagement {
                     }
                 }
             }
-            filter { includeGroup('gov.usbr.wq') }
+            filter { includeModule('usbr.wat.plugins', 'usbr-wtmp-git-tool') }
         }
 
         exclusiveContent {
@@ -120,7 +119,7 @@ dependencyResolutionManagement {
                     }
                 }
             }
-            filter { includeGroup('gov.usbr.wq') }
+            filter { includeModule('usbr.wat.plugins', 'usbr-actionpanel-jasper') }
         }
 
         exclusiveContent {
@@ -134,32 +133,27 @@ dependencyResolutionManagement {
                     }
                 }
             }
-            filter { includeGroup('gov.usbr.wq') }
+            filter { includeModule('usbr.wat.plugins', 'usbr-actionpanel-python') }
         }
 
-        // Route HEC/Nexus artifacts to HEC’s public repository
-        exclusiveContent {
-            forRepository {
-                maven {
-                    name = 'HEC_Nexus'
-                    url = uri('https://www.hec.usace.army.mil/nexus/repository/maven-public')
-                }
-            }
-            filter {
-                includeGroup('mil.army.usace.hec')
-                includeGroup('com.rmanet')
+        maven {
+            name = 'HEC_WAT_Releases'
+            url = uri('https://www.hec.usace.army.mil/nexus/repository/wat-releases')
+            credentials {
+                username = System.getenv("NEXUS_USER")
+                password = System.getenv("NEXUS_PASSWORD")
             }
         }
         maven {
-            url 'https://www.hec.usace.army.mil/nexus/repository/hec-internal'
+            url = uri('https://www.hec.usace.army.mil/nexus/repository/maven-public')
         }
         maven {
-            url 'https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/'
+            url = uri('https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/')
         }
         maven {
             /* GeoTools */
-            url 'https://repo.osgeo.org/repository/release/'
+            url = uri('https://repo.osgeo.org/repository/release/')
         }
-
+        mavenCentral()
     }
 }
