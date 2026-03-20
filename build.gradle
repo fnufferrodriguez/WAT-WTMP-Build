@@ -306,19 +306,19 @@ tasks.register("assembleInstaller", Sync) { task ->
         copySpec.from { configurations.addl_wat_natives.collect { file -> zipTree(file) } }
     }
 
-    task.dependsOn(tasks.named("extractResSim"))
-    // The right version of ResSim
-    task.into("apps/HEC-ResSim") { intoDir ->
-         intoDir.from(tasks.named("extractResSim")) { rssCopySpec ->
-            rssCopySpec.eachFile { fcd ->
-                def segmentList = fcd.relativePath.segments.toList()
-                // Duplicate HEC-ResSim entry
-                segmentList.remove(2)
-                fcd.relativePath = new RelativePath(true, (String[]) (segmentList.toArray()))
-            }
-            rssCopySpec.includeEmptyDirs = false
-        }
-    }
+//     task.dependsOn(tasks.named("extractResSim"))
+//     // The right version of ResSim
+//     task.into("apps/HEC-ResSim") { intoDir ->
+//          intoDir.from(tasks.named("extractResSim")) { rssCopySpec ->
+//             rssCopySpec.eachFile { fcd ->
+//                 def segmentList = fcd.relativePath.segments.toList()
+//                 // Duplicate HEC-ResSim entry
+//                 segmentList.remove(2)
+//                 fcd.relativePath = new RelativePath(true, (String[]) (segmentList.toArray()))
+//             }
+//             rssCopySpec.includeEmptyDirs = false
+//         }
+//     }
 
     task.into("apps/ceQualW2/exe") { intoDir ->
         // These will take whatever name is grabbed out of Nexus
