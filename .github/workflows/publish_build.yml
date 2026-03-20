@@ -5,7 +5,12 @@ permissions:
   packages: write  
 
 # this should only be triggered manually
-on: workflow_dispatch
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
 
 jobs:
   build:
