@@ -279,31 +279,31 @@ tasks.register("assembleInstaller", Sync) { task ->
         copySpec.from { configurations.usbr_python_git.collect { file -> zipTree(file) } }
     }
 
-    task.dependsOn(configurations.addl_wat_firstparty_jars)
-    task.into("HEC-WAT/jar") { copySpec ->
-        from configurations.addl_wat_firstparty_jars.copy()
-    }
-
-    task.dependsOn(configurations.addl_wat_jars)
-    task.dependsOn(configurations.usbr_plugins)
-    task.into("HEC-WAT/jar/sys") { copySpec ->
-        // Additional jars into WAT/jar (eg Jasper fonts)
-        copySpec.from configurations.addl_wat_jars.copy().setTransitive(false)
-        // Plugin dependencies go into jar/sys
-        copySpec.from configurations.usbr_plugins.copyRecursive().setTransitive(true) - configurations.usbr_plugins.copy().setTransitive(false)
-    }
-
-    task.dependsOn(configurations.wat_plugins)
-    // The plugin jars go in jar/ext
-    task.into("HEC-WAT/jar/ext") { intoDir ->
-        from { configurations.wat_plugins.copy().setTransitive(false) }
-        from { configurations.usbr_plugins.copy().setTransitive(false) }
-    }
-
-    // Additional natives into WAT/lib (eg Jasper fonts)
-    task.dependsOn(configurations.addl_wat_natives)
-    task.into("HEC-WAT/lib") { copySpec ->
-        copySpec.from { configurations.addl_wat_natives.collect { file -> zipTree(file) } }
+//     task.dependsOn(configurations.addl_wat_firstparty_jars)
+//     task.into("HEC-WAT/jar") { copySpec ->
+//         from configurations.addl_wat_firstparty_jars.copy()
+//     }
+//
+//     task.dependsOn(configurations.addl_wat_jars)
+//     task.dependsOn(configurations.usbr_plugins)
+//     task.into("HEC-WAT/jar/sys") { copySpec ->
+//         // Additional jars into WAT/jar (eg Jasper fonts)
+//         copySpec.from configurations.addl_wat_jars.copy().setTransitive(false)
+//         // Plugin dependencies go into jar/sys
+//         copySpec.from configurations.usbr_plugins.copyRecursive().setTransitive(true) - configurations.usbr_plugins.copy().setTransitive(false)
+//     }
+//
+//     task.dependsOn(configurations.wat_plugins)
+//     // The plugin jars go in jar/ext
+//     task.into("HEC-WAT/jar/ext") { intoDir ->
+//         from { configurations.wat_plugins.copy().setTransitive(false) }
+//         from { configurations.usbr_plugins.copy().setTransitive(false) }
+//     }
+//
+//     // Additional natives into WAT/lib (eg Jasper fonts)
+//     task.dependsOn(configurations.addl_wat_natives)
+//     task.into("HEC-WAT/lib") { copySpec ->
+//         copySpec.from { configurations.addl_wat_natives.collect { file -> zipTree(file) } }
     }
 
 //     task.dependsOn(tasks.named("extractResSim"))
