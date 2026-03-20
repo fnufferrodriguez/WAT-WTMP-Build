@@ -304,7 +304,7 @@ tasks.register("assembleInstaller", Sync) { task ->
 //     task.dependsOn(configurations.addl_wat_natives)
 //     task.into("HEC-WAT/lib") { copySpec ->
 //         copySpec.from { configurations.addl_wat_natives.collect { file -> zipTree(file) } }
-    }
+//     }
 
 //     task.dependsOn(tasks.named("extractResSim"))
 //     // The right version of ResSim
