@@ -154,6 +154,20 @@ dependencyResolutionManagement {
             forRepository {
                 maven {
                     name = 'GitHubPackages'
+                    url = uri('https://maven.pkg.github.com/doi-bor/Merlin-Web-Client')
+                    credentials {
+                        username = System.getenv("GITHUB_ACTOR")
+                        password = System.getenv("GITHUB_TOKEN")
+                    }
+                }
+            }
+            filter { includeModule('gov.usbr.wq', 'merlin-web-client') }
+        }
+
+        exclusiveContent {
+            forRepository {
+                maven {
+                    name = 'GitHubPackages'
                     url = uri('https://maven.pkg.github.com/doi-bor/Merlin-To-HEC')
                     credentials {
                         username = System.getenv("GITHUB_ACTOR")
