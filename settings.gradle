@@ -192,6 +192,20 @@ dependencyResolutionManagement {
             filter { includeModule('usbr.wat.plugins', 'usbr-git-library') }
         }
 
+        exclusiveContent {
+            forRepository {
+                maven {
+                    name = 'GitHubPackages'
+                    url = uri('https://maven.pkg.github.com/doi-bor/WTMP-W2-Executables')
+                    credentials {
+                        username = System.getenv("GITHUB_ACTOR")
+                        password = System.getenv("GITHUB_TOKEN")
+                    }
+                }
+            }
+            filter { includeGroup('edu.pdx.ce.w2') }
+        }
+
         maven {
             name = 'HEC_WAT_Releases'
             url = uri('https://www.hec.usace.army.mil/nexus/repository/wat-releases')
