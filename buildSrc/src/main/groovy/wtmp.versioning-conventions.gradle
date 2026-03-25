@@ -27,10 +27,6 @@ String getShortVersionName() {
     return project.version.toString()
 }
 
-String getConventionVersion() {
-    return project.version.toString()
-}
-
 String getBuildID() {
     return project.version.toString()
 }
