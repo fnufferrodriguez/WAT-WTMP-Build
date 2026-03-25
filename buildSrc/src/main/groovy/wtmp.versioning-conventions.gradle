@@ -24,7 +24,7 @@ def versionLabel(gitInfo) {
 
     def tag = gitInfo.lastTag
     // tag is returned as is. Branch may need cleanup
-    return (branch == null || branch == "null" || branch.isEmpty()) ? tag : LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")) + "-SNAPSHOT"
+    return (branch == null || branch == "null" || branch.isEmpty()) ? tag : 'v' + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))
 }
 
 /**
@@ -32,30 +32,22 @@ def versionLabel(gitInfo) {
  * Otherwise, gets the current commit (and status)
  */
 String getBuildID() {
-    if(project.version.contains("-SNAPSHOT")) {
-        def buildNum = System.env.BUILD_NUMBER
-        if (!buildNum?.trim()) {
-            buildNum = "-${grgit.head().abbreviatedId}"
-            def clean = grgit.status().isClean()
-            if (!clean) {
-                buildNum += "+"
-            }
-        } else {
-            buildNum = "." + buildNum
+    def buildNum = System.env.BUILD_NUMBER
+    if (!buildNum?.trim()) {
+        buildNum = "-${grgit.head().abbreviatedId}"
+        def clean = grgit.status().isClean()
+        if (!clean) {
+            buildNum += "+"
         }
-        return buildNum
     } else {
-        // If dirty, return "+"
-        return grgit.status().isClean() ? "" : "+"
+        buildNum = "." + buildNum
     }
+    return buildNum
+
 }
 
 String getShortVersionName() {
-    String shortVersion = project.version
-    if(shortVersion.contains("-SNAPSHOT")) {
-        shortVersion = shortVersion.substring(0, shortVersion.indexOf("-SNAPSHOT"))
-    }
-    return shortVersion
+    return project.version
 }
 
 String getConventionVersion() {
