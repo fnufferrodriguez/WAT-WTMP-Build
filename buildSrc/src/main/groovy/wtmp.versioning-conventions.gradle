@@ -1,8 +1,3 @@
-
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-
-
 plugins {
     id "com.palantir.git-version"
     id "org.ajoberstar.grgit"
@@ -25,25 +20,6 @@ def versionLabel(gitInfo) {
     def tag = gitInfo.lastTag
     // tag is returned as is. Branch may need cleanup
     return (branch == null || branch == "null" || branch.isEmpty()) ? tag : 'v' + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-}
-
-/**
- * When running on the Build System (eg TeamCity) will get BUILD_NUMBER
- * Otherwise, gets the current commit (and status)
- */
-String getBuildID() {
-    def buildNum = System.env.BUILD_NUMBER
-    if (!buildNum?.trim()) {
-        buildNum = "-${grgit.head().abbreviatedId}"
-        def clean = grgit.status().isClean()
-        if (!clean) {
-            buildNum += "+"
-        }
-    } else {
-        buildNum = "." + buildNum
-    }
-    return buildNum
-
 }
 
 String getShortVersionName() {
