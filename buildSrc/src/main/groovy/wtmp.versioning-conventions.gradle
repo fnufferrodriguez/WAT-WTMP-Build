@@ -9,7 +9,7 @@ plugins {
 
 def getConventionVersion() {
     def fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd") // format: YYYY-MM-DD
-    return LocalDate.now().format(fmt)
+    return "v" + LocalDate.now().format(fmt)
 }
 
 tasks.register("showGit") {
