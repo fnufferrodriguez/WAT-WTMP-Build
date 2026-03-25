@@ -33,4 +33,8 @@ String getConventionVersion() {
     return project.version.toString()
 }
 
+String getBuildID() {
+    return project.version.toString()
+}
+
 project.getExtensions().add("versionConventions", this)
