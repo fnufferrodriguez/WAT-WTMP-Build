@@ -24,7 +24,7 @@ def versionLabel(gitInfo) {
 
     def tag = gitInfo.lastTag
     // tag is returned as is. Branch may need cleanup
-    return (branch == null || branch == "null" || branch.isEmpty()) ? tag : 'v' + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))
+    return (branch == null || branch == "null" || branch.isEmpty()) ? tag : 'v' + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 }
 
 /**
