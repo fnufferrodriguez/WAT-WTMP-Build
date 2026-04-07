@@ -66,8 +66,8 @@ cequalw2-folsom = { module = "edu.pdx.ce.w2:w2", version.ref = "cequalw2-folsom-
 ressim-install = { module = "mil.army.usace.hec.ressim:hec-ressim", version.ref = "ressim-zip" }
 
 # USBR Plugins/Tools
-usbr-actionpanel-jasper = { module = "usbr.wat.plugins:usbr-actionpanel-jasper", version.ref = "usbr-python" }
-usbr-actionpanel-python = { module = "usbr.wat.plugins:usbr-actionpanel-python", version.ref = "usbr-jasper" }
+usbr-actionpanel-jasper = { module = "usbr.wat.plugins:usbr-actionpanel-jasper", version.ref = "usbr-jasper" }
+usbr-actionpanel-python = { module = "usbr.wat.plugins:usbr-actionpanel-python", version.ref = "usbr-python" }
 usbr-wtmp-git = { module = "usbr.wat.plugins:usbr-wtmp-git-tool", version.ref = "usbr-git" }
 
 # wat plugins
