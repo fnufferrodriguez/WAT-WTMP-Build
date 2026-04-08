@@ -33,3 +33,11 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.PACKAGES_PAT }}
             NEXUS_USER: ${{ secrets.NEXUS_USER }}
             NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+      
+      - name: Upload Problems Report
+        if: always()  # ensure upload runs even on failure
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: Problems Report
+          path: |
+            build/reports/**
