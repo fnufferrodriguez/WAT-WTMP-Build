@@ -40,7 +40,7 @@ configurations {
     // The USBR WAT Plugins
     usbr_plugins
     // Python Report Generating code
-    // usbr_python_report
+    usbr_python_report
     // Python Git Tool
     usbr_python_git
     // Jasper files
@@ -150,11 +150,11 @@ dependencies {
 
     addl_wat_natives libs.jhdf5.win.x8664
 
-    // usbr_python_report(libs.usbr.actionpanel.python) {
-    //     artifact {
-    //         type = "zip"
-    //     }
-    // }
+    usbr_python_report(libs.usbr.actionpanel.python) {
+        artifact {
+            type = "zip"
+        }
+    }
 
     usbr_python_git(libs.usbr.wtmp.git) {
         artifact {
@@ -231,7 +231,7 @@ tasks.register("assembleInstaller", Sync) { task ->
     task.into layout.buildDirectory.dir("WTMP")
 
     task.dependsOn(tasks.named("filterWAT"))
-    // task.dependsOn(configurations.usbr_python_report)
+    task.dependsOn(configurations.usbr_python_report)
     task.dependsOn(configurations.usbr_jasper)
     task.dependsOn(configurations.usbr_python_git)
     task.dependsOn(extraFilesSourceSet)
@@ -284,7 +284,7 @@ tasks.register("assembleInstaller", Sync) { task ->
         // WTMP-specific addon files
         from(extraFilesSourceSet)
 
-        // copySpec.from { configurations.usbr_python_report.collect { file -> zipTree(file) } }
+        copySpec.from { configurations.usbr_python_report.collect { file -> zipTree(file) } }
         copySpec.from { configurations.usbr_jasper.collect { file -> zipTree(file) } }
         copySpec.from { configurations.usbr_python_git.collect { file -> zipTree(file) } }
     }
