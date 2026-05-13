@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     # run on windows to mimic local build
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
 
     steps:
       - name: Checkout repository
