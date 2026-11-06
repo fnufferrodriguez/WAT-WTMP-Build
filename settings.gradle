@@ -39,7 +39,8 @@ dependencyResolutionManagement {
 
         // Route only specific artifacts to GitHub Packages
         exclusiveContent {
-            forRepository {
+            forRepositories(
+                mavenLocal(),
                 maven {
                     name = 'GitHubPackages'
                     url = uri('https://maven.pkg.github.com/doi-bor/WTMP-Action-Panel')
@@ -48,12 +49,13 @@ dependencyResolutionManagement {
                         password = System.getenv("GITHUB_TOKEN")
                     }
                 }
-            }
+            )
             filter { includeModule('usbr.wat.plugins', 'usbr-actionpanel-plugin') }
         }
 
         exclusiveContent {
-            forRepository {
+            forRepositories(
+                mavenLocal(),
                 maven {
                     name = 'GitHubPackages'
                     url = uri('https://maven.pkg.github.com/doi-bor/WTMP-Comparison-Report')
@@ -62,12 +64,13 @@ dependencyResolutionManagement {
                         password = System.getenv("GITHUB_TOKEN")
                     }
                 }
-            }
+            )
             filter { includeModule('usbr.wat.plugins', 'usbr-comparison-report') }
         }
 
         exclusiveContent {
-            forRepository {
+            forRepositories(
+                mavenLocal(),
                 maven {
                     name = 'GitHubPackages'
                     url = uri('https://maven.pkg.github.com/doi-bor/WTMP-Forecast-Report')
@@ -76,12 +79,13 @@ dependencyResolutionManagement {
                         password = System.getenv("GITHUB_TOKEN")
                     }
                 }
-            }
+            )
             filter { includeModule('usbr.wat.plugins', 'usbr-forecast-report') }
         }
 
         exclusiveContent {
-            forRepository {
+            forRepositories(
+                mavenLocal(),
                 maven {
                     name = 'GitHubPackages'
                     url = uri('https://maven.pkg.github.com/doi-bor/WTMP-Simulation-Report')
@@ -90,12 +94,13 @@ dependencyResolutionManagement {
                         password = System.getenv("GITHUB_TOKEN")
                     }
                 }
-            }
+            )
             filter { includeModule('usbr.wat.plugins', 'usbr-simulation-report') }
         }
 
         exclusiveContent {
-            forRepository {
+            forRepositories(
+                mavenLocal(),
                 maven {
                     name = 'GitHubPackages'
                     url = uri('https://maven.pkg.github.com/doi-bor/USBR-WAT-Study-Git-Tool')
@@ -104,12 +109,13 @@ dependencyResolutionManagement {
                         password = System.getenv("GITHUB_TOKEN")
                     }
                 }
-            }
+            )
             filter { includeModule('usbr.wat.plugins', 'usbr-wtmp-git-tool') }
         }
 
         exclusiveContent {
-            forRepository {
+            forRepositories(
+                mavenLocal(),
                 maven {
                     name = 'GitHubPackages'
                     url = uri('https://maven.pkg.github.com/doi-bor/WTMP-Jasper-Reporting')
@@ -118,12 +124,13 @@ dependencyResolutionManagement {
                         password = System.getenv("GITHUB_TOKEN")
                     }
                 }
-            }
+            )
             filter { includeModule('usbr.wat.plugins', 'usbr-actionpanel-jasper') }
         }
 
         exclusiveContent {
-            forRepository {
+            forRepositories(
+                mavenLocal(),
                 maven {
                     name = 'GitHubPackages'
                     url = uri('https://maven.pkg.github.com/doi-bor/WTMP-Python-Plotting')
@@ -132,12 +139,13 @@ dependencyResolutionManagement {
                         password = System.getenv("GITHUB_TOKEN")
                     }
                 }
-            }
+            )
             filter { includeModule('usbr.wat.plugins', 'usbr-actionpanel-python') }
         }
 
         exclusiveContent {
-            forRepository {
+            forRepositories(
+                mavenLocal(),
                 maven {
                     name = 'GitHubPackages'
                     url = uri('https://maven.pkg.github.com/doi-bor/WTMP-Jasper-Fonts')
@@ -146,12 +154,13 @@ dependencyResolutionManagement {
                         password = System.getenv("GITHUB_TOKEN")
                     }
                 }
-            }
+            )
             filter { includeModule('gov.usbr', 'usbr-jasper-fonts') }
         }
 
         exclusiveContent {
-            forRepository {
+            forRepositories(
+                mavenLocal(),
                 maven {
                     name = 'GitHubPackages'
                     url = uri('https://maven.pkg.github.com/doi-bor/Merlin-Web-Client')
@@ -160,12 +169,13 @@ dependencyResolutionManagement {
                         password = System.getenv("GITHUB_TOKEN")
                     }
                 }
-            }
+            )
             filter { includeModule('gov.usbr.wq', 'merlin-web-client') }
         }
 
         exclusiveContent {
-            forRepository {
+            forRepositories(
+                mavenLocal(),
                 maven {
                     name = 'GitHubPackages'
                     url = uri('https://maven.pkg.github.com/doi-bor/Merlin-To-HEC')
@@ -174,12 +184,13 @@ dependencyResolutionManagement {
                         password = System.getenv("GITHUB_TOKEN")
                     }
                 }
-            }
+            )
             filter { includeModule('gov.usbr.wq', 'merlin-data-exchange') }
         }
 
         exclusiveContent {
-            forRepository {
+            forRepositories(
+                mavenLocal(),
                 maven {
                     name = 'GitHubPackages'
                     url = uri('https://maven.pkg.github.com/doi-bor/WTMP-Git-Library')
@@ -188,12 +199,13 @@ dependencyResolutionManagement {
                         password = System.getenv("GITHUB_TOKEN")
                     }
                 }
-            }
+            )
             filter { includeModule('usbr.wat.plugins', 'usbr-git-library') }
         }
 
         exclusiveContent {
-            forRepository {
+            forRepositories(
+                mavenLocal(),
                 maven {
                     name = 'GitHubPackages'
                     url = uri('https://maven.pkg.github.com/doi-bor/WTMP-W2-Executables')
@@ -202,7 +214,7 @@ dependencyResolutionManagement {
                         password = System.getenv("GITHUB_TOKEN")
                     }
                 }
-            }
+            )
             filter { includeGroup('edu.pdx.ce.w2') }
         }
 
@@ -215,15 +227,55 @@ dependencyResolutionManagement {
             }
         }
         maven {
+            name = 'GitHub Mirror'
+            url = uri('https://maven.pkg.github.com/doi-bor/WTMP-HEC-Internal')
+            credentials {
+                        username = System.getenv("GITHUB_ACTOR")
+                        password = System.getenv("GITHUB_TOKEN")
+                    }
+        }
+        maven {
             url = uri('https://www.hec.usace.army.mil/nexus/repository/maven-public')
+        }
+        maven {
+            name = 'GitHub Mirror'
+            url = uri('https://maven.pkg.github.com/doi-bor/WTMP-HEC-Public')
+            credentials {
+                        username = System.getenv("GITHUB_ACTOR")
+                        password = System.getenv("GITHUB_TOKEN")
+                    }
         }
         maven {
             url = uri('https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/')
         }
         maven {
+            name = 'GitHub Mirror'
+            url = uri('https://maven.pkg.github.com/doi-bor/WTMP-Jaspersoft')
+            credentials {
+                        username = System.getenv("GITHUB_ACTOR")
+                        password = System.getenv("GITHUB_TOKEN")
+                    }
+        }
+        maven {
             /* GeoTools */
             url = uri('https://repo.osgeo.org/repository/release/')
         }
+        maven {
+            name = 'GitHub Mirror'
+            url = uri('https://maven.pkg.github.com/doi-bor/WTMP-OSGeo')
+            credentials {
+                        username = System.getenv("GITHUB_ACTOR")
+                        password = System.getenv("GITHUB_TOKEN")
+                    }
+        }
         mavenCentral()
+        maven {
+            name = 'GitHub Mirror'
+            url = uri('https://maven.pkg.github.com/doi-bor/WTMP-Maven-Central')
+            credentials {
+                        username = System.getenv("GITHUB_ACTOR")
+                        password = System.getenv("GITHUB_TOKEN")
+                    }
+        }
     }
 }
